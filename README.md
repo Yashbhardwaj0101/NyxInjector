@@ -16,3 +16,17 @@ pip3 install requests
 python3 nyx_injector.py --help
 python3 nyx_injector.py -t https://target.com/search --auto --optimize
 python3 nyx_injector.py --rat
+
+# Create virtual environment
+python3 -m venv venv
+
+# Activate it
+source venv/bin/activate
+
+# Now install freely
+pip install requests
+
+# Run your script
+python your_script.py
+
+# Deactivate 
