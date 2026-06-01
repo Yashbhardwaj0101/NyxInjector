@@ -27,6 +27,9 @@ source venv/bin/activate
 pip install requests
 
 # Run your script
-python your_script.py
+python3 nyx_injector.py
 
 # Deactivate 
+## add some new
+python3 nyx_injector.py -t https://target.com --full-takeover
+python3 nyx_injector.py -t https://target.com --all
